@@ -1,16 +1,17 @@
 import { useMemo } from 'react'
 import { CursorUsageRecord } from '../types'
 import { calculateBudgetMetrics } from '../utils/budgetCalculations'
-import { getBillingPeriodDay, getMonthlyCostLimit } from '../utils/localStorage'
+import { getBillingPeriodDay } from '../utils/localStorage'
 import './ProgressBars.css'
 
 interface ProgressBarsProps {
   records: CursorUsageRecord[]
+  monthlyCostLimit: number | null
 }
 
-export function ProgressBars({ records }: ProgressBarsProps) {
+export function ProgressBars({ records, monthlyCostLimit }: ProgressBarsProps) {
   const billingPeriodDay = getBillingPeriodDay()
-  const monthlyLimit = getMonthlyCostLimit()
+  const monthlyLimit = monthlyCostLimit
 
   const metrics = useMemo(() => {
     return calculateBudgetMetrics(records, billingPeriodDay, monthlyLimit)

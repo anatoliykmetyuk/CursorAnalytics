@@ -25,9 +25,19 @@ test.describe('File Upload', () => {
     await expect(page.getByText('Filters')).toBeVisible()
     await expect(page.getByText('Cost Analysis')).toBeVisible()
 
+    // Verify file upload section is hidden
+    await expect(page.getByText(/Click or drag CSV file here to upload/i)).not.toBeVisible()
+
+    // Verify Delete Data button appears
+    await expect(page.getByText('Delete Data')).toBeVisible()
+
     // Verify no error message is shown
     const errorMessage = page.locator('.error-message')
     await expect(errorMessage).not.toBeVisible()
+
+    // Verify page scrolled to chart (check if chart is in viewport)
+    const chart = page.locator('.chart-container')
+    await expect(chart).toBeVisible()
   })
 
   test('should show error for non-CSV file', async ({ page }) => {

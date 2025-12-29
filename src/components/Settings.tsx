@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react'
 import { getBillingPeriodDay, setBillingPeriodDay, getMonthlyCostLimit, setMonthlyCostLimit } from '../utils/localStorage'
 import './Settings.css'
 
-export function Settings() {
+interface SettingsProps {
+  onMonthlyLimitChange?: (limit: number | null) => void
+}
+
+export function Settings({ onMonthlyLimitChange }: SettingsProps) {
   const [billingPeriodDay, setBillingPeriodDayState] = useState<number>(1)
   const [monthlyCostLimit, setMonthlyCostLimitState] = useState<string>('')
 
@@ -27,10 +31,12 @@ export function Settings() {
 
     if (value === '') {
       setMonthlyCostLimit(null)
+      onMonthlyLimitChange?.(null)
     } else {
       const numValue = parseFloat(value)
       if (!isNaN(numValue) && numValue >= 0) {
         setMonthlyCostLimit(numValue)
+        onMonthlyLimitChange?.(numValue)
       }
     }
   }
