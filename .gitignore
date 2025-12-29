@@ -29,4 +29,4 @@ playwright-report
 test-results
 
 spec/design-guide/
-spec/sample-cursor-data.csv
+spec/samples/
