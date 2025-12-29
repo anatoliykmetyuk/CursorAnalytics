@@ -48,7 +48,7 @@ describe('App', () => {
     render(<App />)
 
     expect(loadCSVData).toHaveBeenCalled()
-    expect(screen.getByText('Settings')).toBeInTheDocument()
+    expect(screen.getByText('Filters')).toBeInTheDocument()
     expect(screen.getByText('Delete Data')).toBeInTheDocument()
   })
 

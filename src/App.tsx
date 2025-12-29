@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { FileUpload } from './components/FileUpload'
 import { Filters } from './components/Filters'
 import { Chart } from './components/Chart'
-import { Settings } from './components/Settings'
 import { ProgressBars } from './components/ProgressBars'
 import { CursorUsageRecord, Filters as FiltersType } from './types'
 import { loadCSVData, saveCSVData, deleteCSVData, getMonthlyCostLimit } from './utils/localStorage'
@@ -105,17 +104,19 @@ function App() {
 
         {records.length > 0 && (
           <>
-            <div className="delete-data-section">
-              <button className="delete-data-button" onClick={handleDeleteData}>
-                Delete Data
-              </button>
-            </div>
-            <Settings onMonthlyLimitChange={setMonthlyCostLimit} />
             <ProgressBars records={records} monthlyCostLimit={monthlyCostLimit} />
-            <Filters records={records} filters={filters} onFiltersChange={setFilters} />
+            <Filters
+              records={records}
+              filters={filters}
+              onFiltersChange={setFilters}
+              onMonthlyLimitChange={setMonthlyCostLimit}
+            />
             <div ref={chartRef}>
               <Chart records={records} filters={filters} />
             </div>
+            <button className="delete-data-button" onClick={handleDeleteData}>
+              Delete Data
+            </button>
           </>
         )}
       </main>

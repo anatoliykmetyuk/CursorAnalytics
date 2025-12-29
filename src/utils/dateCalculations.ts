@@ -1,4 +1,4 @@
-import { startOfMonth, startOfDay, isAfter, isBefore, addDays, subDays, getDay, format } from 'date-fns'
+import { startOfMonth, startOfDay, isAfter, isBefore, addDays, subDays, getDay } from 'date-fns'
 
 /**
  * Gets the start of the current billing period
@@ -202,9 +202,9 @@ export function getBillingPeriodEnd(
 }
 
 /**
- * Formats a date as YYYY-MM-DD for display
+ * Formats a date as ISO 8601 format (YYYY-MM-DD) for display
  */
 export function formatDateForDisplay(date: Date): string {
-  return format(date, 'yyyy-MM-dd')
+  return date.toISOString().split('T')[0]
 }
 

@@ -129,6 +129,11 @@ export function Chart({ records, filters }: ChartProps) {
               borderRadius: '4px',
               color: '#fff',
             }}
+            formatter={(value: number | string) => {
+              const numValue = typeof value === 'number' ? value : parseFloat(String(value))
+              return `$${numValue.toFixed(2)}`
+            }}
+            labelFormatter={(label: string) => `Date: ${label}`}
           />
           <Legend wrapperStyle={{ color: '#888' }} />
           <Bar

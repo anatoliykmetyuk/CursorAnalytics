@@ -6,6 +6,9 @@ import { CursorUsageRecord, Filters as FiltersType } from '../../src/types'
 // Mock localStorage
 vi.mock('../../src/utils/localStorage', () => ({
   getBillingPeriodDay: vi.fn(() => 1),
+  setBillingPeriodDay: vi.fn(),
+  getMonthlyCostLimit: vi.fn(() => null),
+  setMonthlyCostLimit: vi.fn(),
 }))
 
 // Mock date calculations
@@ -127,6 +130,20 @@ describe('Filters', () => {
         })
       )
     })
+  })
+
+  it('should render billing period day input', () => {
+    const onFiltersChange = vi.fn()
+    render(<Filters records={mockRecords} filters={defaultFilters} onFiltersChange={onFiltersChange} />)
+
+    expect(screen.getByLabelText('Billing Period Day')).toBeInTheDocument()
+  })
+
+  it('should render monthly cost limit input', () => {
+    const onFiltersChange = vi.fn()
+    render(<Filters records={mockRecords} filters={defaultFilters} onFiltersChange={onFiltersChange} />)
+
+    expect(screen.getByLabelText('Monthly Cost Limit ($)')).toBeInTheDocument()
   })
 })
 
