@@ -1,0 +1,4 @@
+- [] When the CSV file is uploaded, the user should immediately see the chart. They need to be autoscrolled to the chart.
+- [] Uploaded CSV needs to be persisted in browser's local storage and available upon refresh of the page.
+- [] If the data is uploaded, the upload section must be hidden. There must be a red button saying "Delete Data" that when clicked, deletes the data from the browser's local storage, after confirmation.
+- [] Monthly Usage Limit should update the progress bars reactively, immediately upon change.
