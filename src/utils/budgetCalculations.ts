@@ -11,6 +11,15 @@ import {
 import { isAfter, isBefore, startOfDay } from 'date-fns'
 
 /**
+ * Filters out "Errored, No Charge" and "Aborted, Not Charged" entries
+ */
+export function excludeErroredNoCharge(records: CursorUsageRecord[]): CursorUsageRecord[] {
+  return records.filter(
+    record => record.kind !== 'Errored, No Charge' && record.kind !== 'Aborted, Not Charged'
+  )
+}
+
+/**
  * Calculates total cost for records within a date range
  */
 export function calculateTotalCost(records: CursorUsageRecord[]): number {
@@ -90,6 +99,7 @@ export function getUniqueUsageTypes(records: CursorUsageRecord[]): string[] {
 
 /**
  * Calculates current billing period usage (unfiltered)
+ * Excludes "Errored, No Charge" entries from progress bar calculations
  */
 export function calculateBillingPeriodUsage(
   records: CursorUsageRecord[],
@@ -99,22 +109,26 @@ export function calculateBillingPeriodUsage(
   const periodEnd = getBillingPeriodEnd(billingPeriodDay)
 
   const periodRecords = filterByDateRange(records, periodStart, periodEnd)
-  return calculateTotalCost(periodRecords)
+  const filteredRecords = excludeErroredNoCharge(periodRecords)
+  return calculateTotalCost(filteredRecords)
 }
 
 /**
  * Calculates current work week usage (unfiltered)
+ * Excludes "Errored, No Charge" entries from progress bar calculations
  */
 export function calculateWorkWeekUsage(records: CursorUsageRecord[]): number {
   const weekStart = getWorkWeekStart()
   const weekEnd = getWorkWeekEnd()
 
   const weekRecords = filterByDateRange(records, weekStart, weekEnd)
-  return calculateTotalCost(weekRecords)
+  const filteredRecords = excludeErroredNoCharge(weekRecords)
+  return calculateTotalCost(filteredRecords)
 }
 
 /**
  * Calculates current work day usage (unfiltered)
+ * Excludes "Errored, No Charge" entries from progress bar calculations
  */
 export function calculateWorkDayUsage(records: CursorUsageRecord[]): number {
   const workDay = getCurrentWorkDay()
@@ -122,7 +136,8 @@ export function calculateWorkDayUsage(records: CursorUsageRecord[]): number {
   const dayEnd = startOfDay(workDay)
 
   const dayRecords = filterByDateRange(records, dayStart, dayEnd)
-  return calculateTotalCost(dayRecords)
+  const filteredRecords = excludeErroredNoCharge(dayRecords)
+  return calculateTotalCost(filteredRecords)
 }
 
 /**

@@ -12,6 +12,7 @@ import {
   calculateWeeklyLimit,
   calculateDailyLimit,
   calculateBudgetMetrics,
+  excludeErroredNoCharge,
 } from '../../src/utils/budgetCalculations'
 import { CursorUsageRecord } from '../../src/types'
 
@@ -212,6 +213,94 @@ describe('Budget Calculations', () => {
       expect(metrics.monthlyLimit).toBeNull()
       expect(metrics.weeklyLimit).toBeNull()
       expect(metrics.dailyLimit).toBeNull()
+    })
+  })
+
+  describe('excludeErroredNoCharge', () => {
+    it('should exclude "Errored, No Charge" entries', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 20), 10.0, 'auto', 'Included'),
+        createRecord(new Date(2025, 11, 21), 5.0, 'auto', 'Errored, No Charge'),
+        createRecord(new Date(2025, 11, 22), 15.0, 'auto', 'On-Demand'),
+      ]
+
+      const filtered = excludeErroredNoCharge(records)
+
+      expect(filtered).toHaveLength(2)
+      expect(filtered.every(r => r.kind !== 'Errored, No Charge')).toBe(true)
+      expect(calculateTotalCost(filtered)).toBe(25.0)
+    })
+
+    it('should exclude "Aborted, Not Charged" entries', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 20), 10.0, 'auto', 'Included'),
+        createRecord(new Date(2025, 11, 21), 5.0, 'auto', 'Aborted, Not Charged'),
+        createRecord(new Date(2025, 11, 22), 15.0, 'auto', 'On-Demand'),
+      ]
+
+      const filtered = excludeErroredNoCharge(records)
+
+      expect(filtered).toHaveLength(2)
+      expect(filtered.every(r => r.kind !== 'Aborted, Not Charged')).toBe(true)
+      expect(calculateTotalCost(filtered)).toBe(25.0)
+    })
+
+    it('should exclude both "Errored, No Charge" and "Aborted, Not Charged" entries', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 20), 10.0, 'auto', 'Included'),
+        createRecord(new Date(2025, 11, 21), 5.0, 'auto', 'Errored, No Charge'),
+        createRecord(new Date(2025, 11, 22), 3.0, 'auto', 'Aborted, Not Charged'),
+        createRecord(new Date(2025, 11, 23), 15.0, 'auto', 'On-Demand'),
+      ]
+
+      const filtered = excludeErroredNoCharge(records)
+
+      expect(filtered).toHaveLength(2)
+      expect(filtered.every(r => r.kind !== 'Errored, No Charge' && r.kind !== 'Aborted, Not Charged')).toBe(true)
+      expect(calculateTotalCost(filtered)).toBe(25.0)
+    })
+
+    it('should return all records if no excluded entries', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 20), 10.0, 'auto', 'Included'),
+        createRecord(new Date(2025, 11, 21), 5.0, 'auto', 'On-Demand'),
+      ]
+
+      const filtered = excludeErroredNoCharge(records)
+
+      expect(filtered).toHaveLength(2)
+      expect(calculateTotalCost(filtered)).toBe(15.0)
+    })
+  })
+
+  describe('calculateBillingPeriodUsage excludes Errored, No Charge and Aborted, Not Charged', () => {
+    it('should exclude "Errored, No Charge" from billing period usage', () => {
+      const today = new Date(2025, 11, 20) // December 20, 2025
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 15), 10.0, 'auto', 'Included'), // Within billing period
+        createRecord(new Date(2025, 11, 16), 5.0, 'auto', 'Errored, No Charge'), // Should be excluded
+        createRecord(new Date(2025, 11, 17), 15.0, 'auto', 'On-Demand'), // Within billing period
+      ]
+
+      const usage = calculateBillingPeriodUsage(records, 15)
+
+      // Should only include Included and On-Demand, exclude Errored, No Charge
+      expect(usage).toBeGreaterThanOrEqual(25.0)
+      expect(usage).toBeLessThan(30.0) // Should not include the 5.0 from Errored, No Charge
+    })
+
+    it('should exclude "Aborted, Not Charged" from billing period usage', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 15), 10.0, 'auto', 'Included'), // Within billing period
+        createRecord(new Date(2025, 11, 16), 5.0, 'auto', 'Aborted, Not Charged'), // Should be excluded
+        createRecord(new Date(2025, 11, 17), 15.0, 'auto', 'On-Demand'), // Within billing period
+      ]
+
+      const usage = calculateBillingPeriodUsage(records, 15)
+
+      // Should only include Included and On-Demand, exclude Aborted, Not Charged
+      expect(usage).toBeGreaterThanOrEqual(25.0)
+      expect(usage).toBeLessThan(30.0) // Should not include the 5.0 from Aborted, Not Charged
     })
   })
 })

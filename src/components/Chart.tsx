@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts'
 import { CursorUsageRecord } from '../types'
-import { calculateTotalCost, filterByDateRange, filterByModel, filterByUsageType } from '../utils/budgetCalculations'
+import { calculateTotalCost, filterByDateRange, filterByModel, filterByUsageType, excludeErroredNoCharge } from '../utils/budgetCalculations'
 import { formatDateForDisplay } from '../utils/dateCalculations'
 import { Filters } from '../types'
 import './Chart.css'
@@ -32,6 +32,11 @@ export function Chart({ records, filters }: ChartProps) {
 
     if (filters.usageType) {
       filtered = filterByUsageType(filtered, filters.usageType)
+    }
+
+    // Exclude "Errored, No Charge" and "Aborted, Not Charged" from chart data UNLESS explicitly selected in filters
+    if (filters.usageType !== 'Errored, No Charge' && filters.usageType !== 'Aborted, Not Charged') {
+      filtered = excludeErroredNoCharge(filtered)
     }
 
     // Group by date and calculate daily and cumulative costs
@@ -75,6 +80,11 @@ export function Chart({ records, filters }: ChartProps) {
 
     if (filters.usageType) {
       filtered = filterByUsageType(filtered, filters.usageType)
+    }
+
+    // Exclude "Errored, No Charge" and "Aborted, Not Charged" from total calculation UNLESS explicitly selected in filters
+    if (filters.usageType !== 'Errored, No Charge' && filters.usageType !== 'Aborted, Not Charged') {
+      filtered = excludeErroredNoCharge(filtered)
     }
 
     return calculateTotalCost(filtered)
