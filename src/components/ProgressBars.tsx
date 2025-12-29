@@ -35,7 +35,6 @@ export function ProgressBars({ records, monthlyCostLimit }: ProgressBarsProps) {
 
   return (
     <div className="progress-bars">
-      <h2>Budget Progress</h2>
       <div className="progress-bars-grid">
         <div className="progress-bar-group">
           <div className="progress-bar-header">

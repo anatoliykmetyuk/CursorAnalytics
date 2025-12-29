@@ -103,13 +103,13 @@ function App() {
 
         {records.length > 0 && (
           <>
-            <ProgressBars records={records} monthlyCostLimit={monthlyCostLimit} />
             <Filters
               records={records}
               filters={filters}
               onFiltersChange={setFilters}
               onMonthlyLimitChange={setMonthlyCostLimit}
             />
+            <ProgressBars records={records} monthlyCostLimit={monthlyCostLimit} />
             <div ref={chartRef}>
               <Chart records={records} filters={filters} />
             </div>
