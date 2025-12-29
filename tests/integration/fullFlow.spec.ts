@@ -47,7 +47,7 @@ test.describe('Full User Flow', () => {
 
     // Step 5: Verify chart updates
     await expect(page.getByText('Cost Analysis')).toBeVisible()
-    const totalCost = page.locator('.cost-value')
+    const totalCost = page.locator('.total-cost .cost-value')
     await expect(totalCost).toBeVisible()
 
     // Step 6: Change date range
@@ -107,7 +107,7 @@ test.describe('Full User Flow', () => {
     await expect(page.getByText('Cost Analysis')).toBeVisible({ timeout: 5000 })
 
     // Get initial total cost
-    const initialTotal = await page.locator('.cost-value').textContent()
+    const initialTotal = await page.locator('.total-cost .cost-value').textContent()
 
     // Filter by usage type
     const usageTypeSelect = page.getByLabel('Usage Type')
@@ -119,7 +119,7 @@ test.describe('Full User Flow', () => {
       await page.waitForTimeout(500)
 
       // Verify total cost changed (or stayed the same if all records match)
-      const newTotal = await page.locator('.cost-value').textContent()
+      const newTotal = await page.locator('.total-cost .cost-value').textContent()
       expect(newTotal).toBeTruthy()
     }
   })
