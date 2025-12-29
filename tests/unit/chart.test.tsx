@@ -58,6 +58,37 @@ describe('Chart', () => {
     expect(screen.getByText(/4\.60/i)).toBeInTheDocument()
   })
 
+  it('should display On-Demand cost', () => {
+    const recordsWithOnDemand: CursorUsageRecord[] = [
+      createRecord(new Date('2025-12-20'), 1.5, 'auto', 'Included'),
+      createRecord(new Date('2025-12-21'), 2.3, 'auto', 'On-Demand'),
+      createRecord(new Date('2025-12-22'), 0.8, 'auto', 'On-Demand'),
+    ]
+
+    render(<Chart records={recordsWithOnDemand} filters={defaultFilters} />)
+
+    // Should display On-Demand Cost
+    expect(screen.getByText(/On-Demand Cost:/i)).toBeInTheDocument()
+    // On-Demand cost should be 2.3 + 0.8 = 3.1
+    const costElements = screen.getAllByText(/3\.10/i)
+    expect(costElements.length).toBeGreaterThan(0)
+  })
+
+  it('should display 0.00 for On-Demand cost when no On-Demand entries', () => {
+    const recordsWithoutOnDemand: CursorUsageRecord[] = [
+      createRecord(new Date('2025-12-20'), 1.5, 'auto', 'Included'),
+      createRecord(new Date('2025-12-21'), 2.3, 'auto', 'Included'),
+    ]
+
+    render(<Chart records={recordsWithoutOnDemand} filters={defaultFilters} />)
+
+    // Should display On-Demand Cost
+    expect(screen.getByText(/On-Demand Cost:/i)).toBeInTheDocument()
+    // On-Demand cost should be 0.00
+    const costElements = screen.getAllByText(/0\.00/i)
+    expect(costElements.length).toBeGreaterThan(0)
+  })
+
   it('should show empty message when no data', () => {
     const emptyFilters: Filters = {
       dateRange: {

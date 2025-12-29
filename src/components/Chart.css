@@ -18,7 +18,15 @@
   font-size: 1.5rem;
 }
 
-.total-cost {
+.cost-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.total-cost,
+.on-demand-cost {
   color: #ccc;
   font-size: 1.1rem;
 }
@@ -27,6 +35,10 @@
   color: #4a9eff;
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+.on-demand-cost .cost-value {
+  color: #ff6b6b;
 }
 
 .chart-empty {

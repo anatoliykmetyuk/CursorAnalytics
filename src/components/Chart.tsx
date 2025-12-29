@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts'
 import { CursorUsageRecord } from '../types'
-import { calculateTotalCost, filterByDateRange, filterByModel, filterByUsageType, excludeErroredNoCharge } from '../utils/budgetCalculations'
+import { calculateTotalCost, calculateOnDemandCost, filterByDateRange, filterByModel, filterByUsageType, excludeErroredNoCharge } from '../utils/budgetCalculations'
 import { formatDateForDisplay } from '../utils/dateCalculations'
 import { Filters } from '../types'
 import './Chart.css'
@@ -90,6 +90,28 @@ export function Chart({ records, filters }: ChartProps) {
     return calculateTotalCost(filtered)
   }, [records, filters])
 
+  const onDemandCost = useMemo(() => {
+    let filtered = records
+
+    // Apply same filters as total cost (date range, model)
+    if (filters.dateRange.start || filters.dateRange.end) {
+      filtered = filterByDateRange(filtered, filters.dateRange.start, filters.dateRange.end)
+    }
+
+    if (filters.model) {
+      filtered = filterByModel(filtered, filters.model)
+    }
+
+    // For On-Demand cost, we always filter to On-Demand usage type
+    // regardless of the usageType filter (which might be set to something else)
+    filtered = filterByUsageType(filtered, 'On-Demand')
+
+    // Exclude "Errored, No Charge" and "Aborted, Not Charged" from On-Demand cost
+    filtered = excludeErroredNoCharge(filtered)
+
+    return calculateOnDemandCost(filtered)
+  }, [records, filters])
+
   if (chartData.length === 0) {
     return (
       <div className="chart-container">
@@ -104,8 +126,13 @@ export function Chart({ records, filters }: ChartProps) {
     <div className="chart-container">
       <div className="chart-header">
         <h2>Cost Analysis</h2>
-        <div className="total-cost">
-          Total Cost: <span className="cost-value">${totalCost.toFixed(2)}</span>
+        <div className="cost-info">
+          <div className="total-cost">
+            Total Cost: <span className="cost-value">${totalCost.toFixed(2)}</span>
+          </div>
+          <div className="on-demand-cost">
+            On-Demand Cost: <span className="cost-value">${onDemandCost.toFixed(2)}</span>
+          </div>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={400}>

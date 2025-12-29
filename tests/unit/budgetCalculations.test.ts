@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   calculateTotalCost,
+  calculateOnDemandCost,
   filterByDateRange,
   filterByModel,
   filterByUsageType,
@@ -48,6 +49,32 @@ describe('Budget Calculations', () => {
 
     it('should return 0 for empty array', () => {
       expect(calculateTotalCost([])).toBe(0)
+    })
+  })
+
+  describe('calculateOnDemandCost', () => {
+    it('should calculate cost only for On-Demand entries', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 20), 10.0, 'auto', 'Included'),
+        createRecord(new Date(2025, 11, 21), 5.0, 'auto', 'On-Demand'),
+        createRecord(new Date(2025, 11, 22), 15.0, 'auto', 'On-Demand'),
+        createRecord(new Date(2025, 11, 23), 3.0, 'auto', 'Included'),
+      ]
+
+      expect(calculateOnDemandCost(records)).toBe(20.0)
+    })
+
+    it('should return 0 if no On-Demand entries', () => {
+      const records: CursorUsageRecord[] = [
+        createRecord(new Date(2025, 11, 20), 10.0, 'auto', 'Included'),
+        createRecord(new Date(2025, 11, 21), 5.0, 'auto', 'Included'),
+      ]
+
+      expect(calculateOnDemandCost(records)).toBe(0)
+    })
+
+    it('should return 0 for empty array', () => {
+      expect(calculateOnDemandCost([])).toBe(0)
     })
   })
 

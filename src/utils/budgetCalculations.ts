@@ -27,6 +27,14 @@ export function calculateTotalCost(records: CursorUsageRecord[]): number {
 }
 
 /**
+ * Calculates On-Demand cost for records
+ */
+export function calculateOnDemandCost(records: CursorUsageRecord[]): number {
+  const onDemandRecords = records.filter(record => record.kind === 'On-Demand')
+  return calculateTotalCost(onDemandRecords)
+}
+
+/**
  * Filters records by date range
  */
 export function filterByDateRange(
