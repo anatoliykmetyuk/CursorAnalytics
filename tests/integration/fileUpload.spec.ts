@@ -21,8 +21,7 @@ test.describe('File Upload', () => {
     await fileInput.setInputFiles(csvPath)
 
     // Wait for file to be processed and components to appear
-    await expect(page.getByText('Settings')).toBeVisible({ timeout: 5000 })
-    await expect(page.getByText('Filters')).toBeVisible()
+    await expect(page.getByText('Filters')).toBeVisible({ timeout: 5000 })
     await expect(page.getByText('Cost Analysis')).toBeVisible()
 
     // Verify file upload section is hidden
@@ -69,7 +68,7 @@ test.describe('File Upload', () => {
     await fileInput.setInputFiles(csvPath)
 
     // Wait for components to appear
-    await expect(page.getByText('Settings')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText('Filters')).toBeVisible({ timeout: 5000 })
 
     // Verify no error message
     const errorMessage = page.locator('.error-message')

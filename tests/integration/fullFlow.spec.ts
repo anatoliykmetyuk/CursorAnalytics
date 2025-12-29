@@ -13,8 +13,7 @@ test.describe('Full User Flow', () => {
     await fileInput.setInputFiles(csvPath)
 
     // Wait for data to load
-    await expect(page.getByText('Settings')).toBeVisible({ timeout: 5000 })
-    await expect(page.getByText('Filters')).toBeVisible()
+    await expect(page.getByText('Filters')).toBeVisible({ timeout: 5000 })
     await expect(page.getByText('Cost Analysis')).toBeVisible()
 
     // Step 2: Set monthly cost limit
@@ -22,8 +21,7 @@ test.describe('Full User Flow', () => {
     await monthlyLimitInput.fill('100')
     await expect(monthlyLimitInput).toHaveValue('100')
 
-    // Step 3: Verify progress bars appear
-    await expect(page.getByText('Budget Progress')).toBeVisible()
+    // Step 3: Verify progress bars appear (no heading anymore, just the bars)
     await expect(page.getByText('Monthly Usage')).toBeVisible()
 
     // Step 4: Filter by model
@@ -48,8 +46,16 @@ test.describe('Full User Flow', () => {
   })
 
   test('should persist settings in local storage', async ({ page }) => {
+    // Upload file first to see the filters
+    const csvPath = join(process.cwd(), 'spec', 'sample-cursor-data.csv')
+    const fileInput = page.locator('input[type="file"]')
+    await fileInput.setInputFiles(csvPath)
+
+    // Wait for filters to load
+    await expect(page.getByText('Filters')).toBeVisible({ timeout: 5000 })
+
     // Set billing period day
-    const billingDayInput = page.getByLabel('Billing Period Day of Month')
+    const billingDayInput = page.getByLabel('Billing Period Day')
     await billingDayInput.fill('15')
     await expect(billingDayInput).toHaveValue('15')
 
