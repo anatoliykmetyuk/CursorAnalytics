@@ -145,5 +145,30 @@ describe('Filters', () => {
 
     expect(screen.getByLabelText('Monthly Cost Limit ($)')).toBeInTheDocument()
   })
+
+  it('should update Start Date filter when billing period day changes', async () => {
+    const onFiltersChange = vi.fn()
+    const { getBillingPeriodStart } = await import('../../src/utils/dateCalculations')
+
+    // Mock getBillingPeriodStart to return a specific date for this test
+    const mockBillingStart = new Date('2025-11-15')
+    vi.mocked(getBillingPeriodStart).mockReturnValueOnce(mockBillingStart)
+
+    render(<Filters records={mockRecords} filters={defaultFilters} onFiltersChange={onFiltersChange} />)
+
+    const billingDayInput = screen.getByLabelText('Billing Period Day')
+    fireEvent.change(billingDayInput, { target: { value: '15' } })
+
+    await waitFor(() => {
+      expect(onFiltersChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          dateRange: expect.objectContaining({
+            start: mockBillingStart,
+            end: expect.any(Date), // End date should be preserved or set to today
+          }),
+        })
+      )
+    })
+  })
 })
 

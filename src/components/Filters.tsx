@@ -17,24 +17,27 @@ export function Filters({ records, filters, onFiltersChange, onMonthlyLimitChang
   const usageTypes = getUniqueUsageTypes(records)
   const [billingPeriodDay, setBillingPeriodDayState] = useState<number>(1)
   const [monthlyCostLimit, setMonthlyCostLimitState] = useState<string>('')
+  const [billingPeriodDayLoaded, setBillingPeriodDayLoaded] = useState<boolean>(false)
 
+  // Load billing period day and monthly limit from localStorage on mount
   useEffect(() => {
     const day = getBillingPeriodDay()
     const limit = getMonthlyCostLimit()
     setBillingPeriodDayState(day)
     setMonthlyCostLimitState(limit !== null ? limit.toString() : '')
+    setBillingPeriodDayLoaded(true)
   }, [])
 
-  const currentBillingPeriodDay = billingPeriodDay
-
   // Set default date range on mount or when records change
+  // This MUST run after billingPeriodDay is loaded from localStorage
   useEffect(() => {
     if (records.length === 0) return
+    if (!billingPeriodDayLoaded) return // Wait for billing period day to be loaded
 
     // Only set defaults if dates are not already set
     if (!filters.dateRange.start || !filters.dateRange.end) {
-      const start = currentBillingPeriodDay
-        ? getBillingPeriodStart(currentBillingPeriodDay)
+      const start = billingPeriodDay
+        ? getBillingPeriodStart(billingPeriodDay)
         : getMonthStart()
       const end = new Date()
 
@@ -46,13 +49,26 @@ export function Filters({ records, filters, onFiltersChange, onMonthlyLimitChang
         },
       })
     }
-  }, [records.length, currentBillingPeriodDay]) // Only depend on records length and billing day
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [records.length, billingPeriodDay, billingPeriodDayLoaded]) // Depend on billingPeriodDay and loaded flag
 
   const handleBillingPeriodDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10)
     if (!isNaN(value) && value >= 1 && value <= 31) {
       setBillingPeriodDayState(value)
       setBillingPeriodDay(value)
+
+      // Immediately update Start Date filter to new billing period start
+      if (records.length > 0) {
+        const newBillingPeriodStart = getBillingPeriodStart(value)
+        onFiltersChange({
+          ...filters,
+          dateRange: {
+            start: newBillingPeriodStart,
+            end: filters.dateRange.end || new Date(), // Keep existing end date or use today
+          },
+        })
+      }
     }
   }
 
