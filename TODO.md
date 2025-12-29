@@ -9,6 +9,7 @@
 - [x] Use ISO data format for displayed data in filters and chart.
 - [x] When I hover over data points in chart, the tooltip should format the numbers to 2 decimal places.
 
-- [ ] Delete Data button shold NOT be hovering/sticky. Its position must be fixed below the chart, after all the other elements.
-- [ ] Remove "Review your Cursor usage and track your budget" subtitle from the header.
-- [ ] Start Date and End Date filters are STILL not displaying ISO data format. Fix that.
+- [x] Delete Data button shold NOT be hovering/sticky. Its position must be fixed below the chart, after all the other elements.
+- [x] Remove "Review your Cursor usage and track your budget" subtitle from the header.
+- [x] Start Date and End Date filters are STILL not displaying ISO data format. Fix that.
+- [ ] Budget Progress Bars need to be displayed above the chart in the Cost Analysis section. Remove "Budget Progress" heading.

@@ -79,7 +79,6 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>Cursor Analytics</h1>
-        <p className="app-subtitle">Review your Cursor usage and track your budget</p>
       </header>
 
       <main className="app-main">
@@ -114,9 +113,11 @@ function App() {
             <div ref={chartRef}>
               <Chart records={records} filters={filters} />
             </div>
-            <button className="delete-data-button" onClick={handleDeleteData}>
-              Delete Data
-            </button>
+            <div className="delete-data-section">
+              <button className="delete-data-button" onClick={handleDeleteData}>
+                Delete Data
+              </button>
+            </div>
           </>
         )}
       </main>

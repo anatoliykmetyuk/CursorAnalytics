@@ -73,7 +73,10 @@ export function Filters({ records, filters, onFiltersChange, onMonthlyLimitChang
   }
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const start = e.target.value ? new Date(e.target.value) : null
+    // Date input value is already in YYYY-MM-DD format (ISO)
+    // Create date in local timezone to avoid timezone conversion issues
+    const dateString = e.target.value
+    const start = dateString ? new Date(dateString + 'T00:00:00') : null
     onFiltersChange({
       ...filters,
       dateRange: {
@@ -84,7 +87,10 @@ export function Filters({ records, filters, onFiltersChange, onMonthlyLimitChang
   }
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const end = e.target.value ? new Date(e.target.value) : null
+    // Date input value is already in YYYY-MM-DD format (ISO)
+    // Create date in local timezone to avoid timezone conversion issues
+    const dateString = e.target.value
+    const end = dateString ? new Date(dateString + 'T00:00:00') : null
     onFiltersChange({
       ...filters,
       dateRange: {

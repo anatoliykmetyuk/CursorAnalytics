@@ -203,8 +203,12 @@ export function getBillingPeriodEnd(
 
 /**
  * Formats a date as ISO 8601 format (YYYY-MM-DD) for display
+ * Uses local date to avoid timezone issues
  */
 export function formatDateForDisplay(date: Date): string {
-  return date.toISOString().split('T')[0]
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
